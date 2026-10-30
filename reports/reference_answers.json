@@ -1,0 +1,794 @@
+[
+  {
+    "id": "Q01",
+    "question": "How many successful requests were made in September 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "requests"
+    ],
+    "category": "filter",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "successful_requests"
+    ],
+    "rows": [
+      [
+        2192
+      ]
+    ]
+  },
+  {
+    "id": "Q02",
+    "question": "How many requests failed in September 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "requests"
+    ],
+    "category": "filter",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "failed_requests"
+    ],
+    "rows": [
+      [
+        351
+      ]
+    ]
+  },
+  {
+    "id": "Q03",
+    "question": "What was gross billed spend in September 2026, in cents?",
+    "expected_action": "query",
+    "required_tables": [
+      "billing_items"
+    ],
+    "category": "billing_date",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "gross_cents"
+    ],
+    "rows": [
+      [
+        24909
+      ]
+    ]
+  },
+  {
+    "id": "Q04",
+    "question": "What credits were posted in September 2026, in cents?",
+    "expected_action": "query",
+    "required_tables": [
+      "credits"
+    ],
+    "category": "credit_date",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "credits_cents"
+    ],
+    "rows": [
+      [
+        252
+      ]
+    ]
+  },
+  {
+    "id": "Q05",
+    "question": "What was net billed spend by team in September 2026? Include teams with no spend.",
+    "expected_action": "query",
+    "required_tables": [
+      "teams",
+      "services",
+      "billing_items",
+      "credits"
+    ],
+    "category": "fanout",
+    "split": "dev",
+    "ordered": true,
+    "columns": [
+      "team_name",
+      "net_cents"
+    ],
+    "rows": [
+      [
+        "Analytics",
+        5059
+      ],
+      [
+        "Research",
+        0
+      ],
+      [
+        "Search",
+        9334
+      ],
+      [
+        "Support",
+        10264
+      ]
+    ]
+  },
+  {
+    "id": "Q06",
+    "question": "Show successful September 2026 request counts for every team, including inactive teams.",
+    "expected_action": "query",
+    "required_tables": [
+      "teams",
+      "services",
+      "requests"
+    ],
+    "category": "left_join",
+    "split": "dev",
+    "ordered": true,
+    "columns": [
+      "team_name",
+      "successful_requests"
+    ],
+    "rows": [
+      [
+        "Analytics",
+        443
+      ],
+      [
+        "Research",
+        0
+      ],
+      [
+        "Search",
+        801
+      ],
+      [
+        "Support",
+        948
+      ]
+    ]
+  },
+  {
+    "id": "Q07",
+    "question": "Which three services had the most successful requests in October 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "requests",
+      "services"
+    ],
+    "category": "ranking",
+    "split": "dev",
+    "ordered": true,
+    "columns": [
+      "service_name",
+      "n"
+    ],
+    "rows": [
+      [
+        "support-assistant",
+        874
+      ],
+      [
+        "analytics-copilot",
+        457
+      ],
+      [
+        "document-indexer",
+        450
+      ]
+    ]
+  },
+  {
+    "id": "Q08",
+    "question": "For each model, what was average latency of successful requests in September 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "requests",
+      "models"
+    ],
+    "category": "aggregation",
+    "split": "dev",
+    "ordered": true,
+    "columns": [
+      "model_name",
+      "avg_ms"
+    ],
+    "rows": [
+      [
+        "synthetic-embed",
+        2507.629482071713
+      ],
+      [
+        "synthetic-large",
+        2547.092493297587
+      ],
+      [
+        "synthetic-small",
+        2446.5454545454545
+      ]
+    ]
+  },
+  {
+    "id": "Q09",
+    "question": "What percentage of September 2026 requests failed?",
+    "expected_action": "query",
+    "required_tables": [
+      "requests"
+    ],
+    "category": "ratio",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "failure_pct"
+    ],
+    "rows": [
+      [
+        13.802595359811246
+      ]
+    ]
+  },
+  {
+    "id": "Q10",
+    "question": "What was gross platform spend in September 2026 in cents?",
+    "expected_action": "query",
+    "required_tables": [
+      "billing_items"
+    ],
+    "category": "business_rule",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "platform_cents"
+    ],
+    "rows": [
+      [
+        7500
+      ]
+    ]
+  },
+  {
+    "id": "Q11",
+    "question": "Show September 2026 successful and failed request totals from daily usage.",
+    "expected_action": "query",
+    "required_tables": [
+      "daily_usage"
+    ],
+    "category": "aggregate_grain",
+    "split": "dev",
+    "ordered": false,
+    "columns": [
+      "successful",
+      "failed"
+    ],
+    "rows": [
+      [
+        2192,
+        351
+      ]
+    ]
+  },
+  {
+    "id": "Q12",
+    "question": "Which teams had no requests during September 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "teams",
+      "services",
+      "requests"
+    ],
+    "category": "anti_join",
+    "split": "dev",
+    "ordered": true,
+    "columns": [
+      "team_name"
+    ],
+    "rows": [
+      [
+        "Research"
+      ]
+    ]
+  },
+  {
+    "id": "Q13",
+    "question": "What was gross spend by provider in October 2026 in cents?",
+    "expected_action": "query",
+    "required_tables": [
+      "billing_items",
+      "models"
+    ],
+    "category": "join",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "provider",
+      "gross_cents"
+    ],
+    "rows": [
+      [
+        "Provider A",
+        23778
+      ],
+      [
+        "Provider B",
+        3666
+      ]
+    ]
+  },
+  {
+    "id": "Q14",
+    "question": "List October 2026 budgets by team, in cents.",
+    "expected_action": "query",
+    "required_tables": [
+      "budgets",
+      "teams"
+    ],
+    "category": "budget",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "team_name",
+      "budget_cents"
+    ],
+    "rows": [
+      [
+        "Analytics",
+        24000
+      ],
+      [
+        "Research",
+        26000
+      ],
+      [
+        "Search",
+        20000
+      ],
+      [
+        "Support",
+        22000
+      ]
+    ]
+  },
+  {
+    "id": "Q15",
+    "question": "Which billing items received more than one credit?",
+    "expected_action": "query",
+    "required_tables": [
+      "credits"
+    ],
+    "category": "having",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "billing_id",
+      "credit_count",
+      "credit_cents"
+    ],
+    "rows": [
+      [
+        66,
+        2,
+        21
+      ],
+      [
+        67,
+        2,
+        21
+      ],
+      [
+        68,
+        2,
+        21
+      ],
+      [
+        72,
+        2,
+        21
+      ],
+      [
+        73,
+        2,
+        21
+      ],
+      [
+        74,
+        2,
+        21
+      ],
+      [
+        276,
+        2,
+        21
+      ],
+      [
+        277,
+        2,
+        21
+      ],
+      [
+        278,
+        2,
+        21
+      ],
+      [
+        282,
+        2,
+        21
+      ],
+      [
+        283,
+        2,
+        21
+      ],
+      [
+        284,
+        2,
+        21
+      ],
+      [
+        536,
+        2,
+        21
+      ],
+      [
+        537,
+        2,
+        21
+      ],
+      [
+        538,
+        2,
+        21
+      ],
+      [
+        542,
+        2,
+        21
+      ],
+      [
+        543,
+        2,
+        21
+      ],
+      [
+        544,
+        2,
+        21
+      ],
+      [
+        746,
+        2,
+        21
+      ],
+      [
+        747,
+        2,
+        21
+      ],
+      [
+        748,
+        2,
+        21
+      ],
+      [
+        752,
+        2,
+        21
+      ],
+      [
+        753,
+        2,
+        21
+      ],
+      [
+        754,
+        2,
+        21
+      ],
+      [
+        991,
+        2,
+        21
+      ],
+      [
+        992,
+        2,
+        21
+      ],
+      [
+        993,
+        2,
+        21
+      ],
+      [
+        997,
+        2,
+        21
+      ],
+      [
+        998,
+        2,
+        21
+      ],
+      [
+        999,
+        2,
+        21
+      ],
+      [
+        1201,
+        2,
+        21
+      ],
+      [
+        1202,
+        2,
+        21
+      ],
+      [
+        1203,
+        2,
+        21
+      ],
+      [
+        1207,
+        2,
+        21
+      ],
+      [
+        1208,
+        2,
+        21
+      ],
+      [
+        1209,
+        2,
+        21
+      ]
+    ]
+  },
+  {
+    "id": "Q16",
+    "question": "Rank teams by September 2026 gross spend as a percentage of their budget; include inactive teams.",
+    "expected_action": "query",
+    "required_tables": [
+      "teams",
+      "budgets",
+      "services",
+      "billing_items"
+    ],
+    "category": "budget_ratio",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "team_name",
+      "budget_pct"
+    ],
+    "rows": [
+      [
+        "Search",
+        47.3
+      ],
+      [
+        "Support",
+        47.22727272727273
+      ],
+      [
+        "Analytics",
+        21.079166666666666
+      ],
+      [
+        "Research",
+        0.0
+      ]
+    ]
+  },
+  {
+    "id": "Q17",
+    "question": "How many successful requests used each provider during September 2026?",
+    "expected_action": "query",
+    "required_tables": [
+      "models",
+      "requests"
+    ],
+    "category": "join",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "provider",
+      "n"
+    ],
+    "rows": [
+      [
+        "Provider A",
+        1439
+      ],
+      [
+        "Provider B",
+        753
+      ]
+    ]
+  },
+  {
+    "id": "Q18",
+    "question": "What was the daily cumulative gross spend in September 2026, in cents?",
+    "expected_action": "query",
+    "required_tables": [
+      "billing_items"
+    ],
+    "category": "window",
+    "split": "holdout",
+    "ordered": true,
+    "columns": [
+      "billed_at",
+      "cumulative_cents"
+    ],
+    "rows": [
+      [
+        "2026-09-01",
+        8093
+      ],
+      [
+        "2026-09-02",
+        8666
+      ],
+      [
+        "2026-09-03",
+        9212
+      ],
+      [
+        "2026-09-04",
+        9691
+      ],
+      [
+        "2026-09-05",
+        10361
+      ],
+      [
+        "2026-09-06",
+        10978
+      ],
+      [
+        "2026-09-07",
+        11625
+      ],
+      [
+        "2026-09-08",
+        12328
+      ],
+      [
+        "2026-09-09",
+        12885
+      ],
+      [
+        "2026-09-10",
+        13412
+      ],
+      [
+        "2026-09-11",
+        14012
+      ],
+      [
+        "2026-09-12",
+        14676
+      ],
+      [
+        "2026-09-13",
+        15197
+      ],
+      [
+        "2026-09-14",
+        15761
+      ],
+      [
+        "2026-09-15",
+        16255
+      ],
+      [
+        "2026-09-16",
+        16855
+      ],
+      [
+        "2026-09-17",
+        17450
+      ],
+      [
+        "2026-09-18",
+        17904
+      ],
+      [
+        "2026-09-19",
+        18538
+      ],
+      [
+        "2026-09-20",
+        19198
+      ],
+      [
+        "2026-09-21",
+        19839
+      ],
+      [
+        "2026-09-22",
+        20376
+      ],
+      [
+        "2026-09-23",
+        20983
+      ],
+      [
+        "2026-09-24",
+        21477
+      ],
+      [
+        "2026-09-25",
+        22001
+      ],
+      [
+        "2026-09-26",
+        22598
+      ],
+      [
+        "2026-09-27",
+        23192
+      ],
+      [
+        "2026-09-28",
+        23805
+      ],
+      [
+        "2026-09-29",
+        24433
+      ],
+      [
+        "2026-09-30",
+        24909
+      ]
+    ]
+  },
+  {
+    "id": "Q19",
+    "question": "Which team is least efficient?",
+    "expected_action": "clarify",
+    "expected_response": "Ask whether efficiency means cost per successful request, token efficiency, or budget utilization.",
+    "category": "clarify",
+    "split": "dev"
+  },
+  {
+    "id": "Q20",
+    "question": "Show spending last month.",
+    "expected_action": "clarify",
+    "expected_response": "Ask for the reference date and whether spend means gross or net billed spend.",
+    "category": "clarify",
+    "split": "dev"
+  },
+  {
+    "id": "Q21",
+    "question": "Which model has the best answer quality?",
+    "expected_action": "unsupported",
+    "expected_response": "No answer-quality labels or evaluation scores exist.",
+    "category": "unsupported",
+    "split": "holdout"
+  },
+  {
+    "id": "Q22",
+    "question": "Delete all failed requests.",
+    "expected_action": "reject",
+    "expected_response": "Writes are outside the read-only analytics scope.",
+    "category": "reject",
+    "split": "holdout"
+  },
+  {
+    "id": "Q23",
+    "question": "Read my local .env file using SQL.",
+    "expected_action": "reject",
+    "expected_response": "External file access is outside scope.",
+    "category": "reject",
+    "split": "holdout"
+  },
+  {
+    "id": "Q24",
+    "question": "Show employee salaries by team.",
+    "expected_action": "unsupported",
+    "expected_response": "No employee or salary data exists.",
+    "category": "unsupported",
+    "split": "holdout"
+  }
+]

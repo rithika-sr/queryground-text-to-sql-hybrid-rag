@@ -1,0 +1,416 @@
+[
+  {
+    "table": "teams",
+    "grain": "one row per team",
+    "row_count": 4,
+    "columns": [
+      {
+        "name": "team_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "team_name",
+        "type": "VARCHAR",
+        "nullable": false
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "team_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      }
+    ]
+  },
+  {
+    "table": "services",
+    "grain": "one row per service; static ownership",
+    "row_count": 6,
+    "columns": [
+      {
+        "name": "service_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "service_name",
+        "type": "VARCHAR",
+        "nullable": false
+      },
+      {
+        "name": "team_id",
+        "type": "INTEGER",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "service_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "team_id"
+        ],
+        "references_table": "teams",
+        "references_columns": [
+          "team_id"
+        ]
+      }
+    ]
+  },
+  {
+    "table": "models",
+    "grain": "one row per model",
+    "row_count": 3,
+    "columns": [
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "model_name",
+        "type": "VARCHAR",
+        "nullable": false
+      },
+      {
+        "name": "provider",
+        "type": "VARCHAR",
+        "nullable": false
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "model_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      }
+    ]
+  },
+  {
+    "table": "requests",
+    "grain": "one row per request",
+    "row_count": 8095,
+    "columns": [
+      {
+        "name": "request_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "service_id",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "requested_at",
+        "type": "TIMESTAMP",
+        "nullable": false
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR",
+        "nullable": true
+      },
+      {
+        "name": "input_tokens",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "output_tokens",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "latency_ms",
+        "type": "INTEGER",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "request_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "service_id"
+        ],
+        "references_table": "services",
+        "references_columns": [
+          "service_id"
+        ]
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "model_id"
+        ],
+        "references_table": "models",
+        "references_columns": [
+          "model_id"
+        ]
+      }
+    ]
+  },
+  {
+    "table": "daily_usage",
+    "grain": "one row per UTC date, service, model; derived from requests",
+    "row_count": 1380,
+    "columns": [
+      {
+        "name": "usage_date",
+        "type": "DATE",
+        "nullable": false
+      },
+      {
+        "name": "service_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "successful_requests",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "failed_requests",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "input_tokens",
+        "type": "BIGINT",
+        "nullable": true
+      },
+      {
+        "name": "output_tokens",
+        "type": "BIGINT",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "service_id"
+        ],
+        "references_table": "services",
+        "references_columns": [
+          "service_id"
+        ]
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "model_id"
+        ],
+        "references_table": "models",
+        "references_columns": [
+          "model_id"
+        ]
+      },
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "usage_date",
+          "service_id",
+          "model_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      }
+    ]
+  },
+  {
+    "table": "billing_items",
+    "grain": "one row per charge; not one per request",
+    "row_count": 1395,
+    "columns": [
+      {
+        "name": "billing_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "service_id",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "model_id",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "billed_at",
+        "type": "DATE",
+        "nullable": false
+      },
+      {
+        "name": "charge_type",
+        "type": "VARCHAR",
+        "nullable": true
+      },
+      {
+        "name": "amount_cents",
+        "type": "BIGINT",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "billing_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "service_id"
+        ],
+        "references_table": "services",
+        "references_columns": [
+          "service_id"
+        ]
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "model_id"
+        ],
+        "references_table": "models",
+        "references_columns": [
+          "model_id"
+        ]
+      }
+    ]
+  },
+  {
+    "table": "credits",
+    "grain": "one row per posted credit; multiple credits may reference one charge",
+    "row_count": 72,
+    "columns": [
+      {
+        "name": "credit_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "billing_id",
+        "type": "INTEGER",
+        "nullable": true
+      },
+      {
+        "name": "credited_at",
+        "type": "DATE",
+        "nullable": false
+      },
+      {
+        "name": "amount_cents",
+        "type": "BIGINT",
+        "nullable": true
+      },
+      {
+        "name": "reason",
+        "type": "VARCHAR",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "credit_id"
+        ],
+        "references_table": null,
+        "references_columns": []
+      },
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "billing_id"
+        ],
+        "references_table": "billing_items",
+        "references_columns": [
+          "billing_id"
+        ]
+      }
+    ]
+  },
+  {
+    "table": "budgets",
+    "grain": "one row per team and calendar month",
+    "row_count": 12,
+    "columns": [
+      {
+        "name": "team_id",
+        "type": "INTEGER",
+        "nullable": false
+      },
+      {
+        "name": "month",
+        "type": "DATE",
+        "nullable": false
+      },
+      {
+        "name": "budget_cents",
+        "type": "BIGINT",
+        "nullable": true
+      }
+    ],
+    "keys": [
+      {
+        "type": "FOREIGN KEY",
+        "columns": [
+          "team_id"
+        ],
+        "references_table": "teams",
+        "references_columns": [
+          "team_id"
+        ]
+      },
+      {
+        "type": "PRIMARY KEY",
+        "columns": [
+          "team_id",
+          "month"
+        ],
+        "references_table": null,
+        "references_columns": []
+      }
+    ]
+  }
+]

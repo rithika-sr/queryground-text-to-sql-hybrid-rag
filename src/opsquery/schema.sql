@@ -1,0 +1,8 @@
+CREATE TABLE teams(team_id INTEGER PRIMARY KEY, team_name VARCHAR UNIQUE NOT NULL);
+CREATE TABLE services(service_id INTEGER PRIMARY KEY, service_name VARCHAR NOT NULL, team_id INTEGER REFERENCES teams(team_id));
+CREATE TABLE models(model_id INTEGER PRIMARY KEY, model_name VARCHAR NOT NULL, provider VARCHAR NOT NULL);
+CREATE TABLE requests(request_id INTEGER PRIMARY KEY, service_id INTEGER REFERENCES services(service_id), model_id INTEGER REFERENCES models(model_id), requested_at TIMESTAMP NOT NULL, status VARCHAR CHECK(status IN ('success','failed')), input_tokens INTEGER CHECK(input_tokens>=0), output_tokens INTEGER CHECK(output_tokens>=0), latency_ms INTEGER CHECK(latency_ms>=0));
+CREATE TABLE daily_usage(usage_date DATE, service_id INTEGER REFERENCES services(service_id), model_id INTEGER REFERENCES models(model_id), successful_requests INTEGER, failed_requests INTEGER, input_tokens BIGINT, output_tokens BIGINT, PRIMARY KEY(usage_date,service_id,model_id));
+CREATE TABLE billing_items(billing_id INTEGER PRIMARY KEY, service_id INTEGER REFERENCES services(service_id), model_id INTEGER REFERENCES models(model_id), billed_at DATE NOT NULL, charge_type VARCHAR CHECK(charge_type IN ('inference','platform')), amount_cents BIGINT CHECK(amount_cents>=0));
+CREATE TABLE credits(credit_id INTEGER PRIMARY KEY, billing_id INTEGER REFERENCES billing_items(billing_id), credited_at DATE NOT NULL, amount_cents BIGINT CHECK(amount_cents>0), reason VARCHAR);
+CREATE TABLE budgets(team_id INTEGER REFERENCES teams(team_id), month DATE, budget_cents BIGINT CHECK(budget_cents>0), PRIMARY KEY(team_id,month));
