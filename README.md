@@ -1,5 +1,8 @@
-# OpsQuery
-An evaluated text-to-SQL assistant for synthetic AI operations spending.
+# QueryGround: Text-to-SQL with Hybrid RAG
+
+A text-to-SQL assistant for synthetic AI spending analytics that retrieves database
+schemas and business rules to propose grounded SQL. It supports BM25 retrieval
+and optional hybrid RAG. The internal Python package remains `opsquery`.
 
 **Status: Day 2 context retrieval and SQL proposal layers complete. Offline prompts and development retrieval metrics verified; live API and embedding inference unverified. No SQL execution or model accuracy claim.**
 
@@ -10,7 +13,7 @@ Requires Python 3.11–3.13; Python 3.12 is the tested environment. No API key n
 
 With uv installed:
 ```bash
-cd opsquery
+cd queryground-text-to-sql-hybrid-rag  # or your existing opsquery workspace
 uv python install 3.12
 uv venv --python 3.12
 source .venv/bin/activate
@@ -71,4 +74,4 @@ Compare full-schema prompting against schema retrieval, business-context retriev
 Synthetic, small, single-schema, USD-only data; static service ownership; no row-level authorization; no query sandbox yet. The reference runner executes only repository-authored SQL. Do not connect it to user/LLM-generated queries. Attribution of billed spend to individual failed requests is unsupported. The current starter cases are not an independently audited benchmark.
 
 ## GitHub
-Create your own repository and commit these files once you have run and understood them. Generated databases are ignored; the generator reproduces them. No files or model weights from the reference friend's repository are reused here. No credentials or employer data are included.
+Repository: [rithika-sr/queryground-text-to-sql-hybrid-rag](https://github.com/rithika-sr/queryground-text-to-sql-hybrid-rag). Licensed under the [MIT License](LICENSE). Generated databases are ignored; the generator reproduces them. No files or model weights from the reference friend's repository are reused here. No credentials or employer data are included.
