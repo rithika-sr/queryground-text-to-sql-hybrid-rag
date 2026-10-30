@@ -14,6 +14,18 @@ class ProposalTests(unittest.TestCase):
         self.assertEqual(len(full['retrieval']['selected_tables']), 8)
         self.assertIn('rule:net-billed-spend', full['retrieval']['context_ids'])
 
+    def test_net_spend_prompt_contains_required_schemas(self):
+        question = 'What was net billed spend by team in September 2026? Include teams with no spend.'
+        for mode in ('full', 'retrieval'):
+            with self.subTest(mode=mode):
+                run = preview(question, mode)
+                docs = {d['id']: d['text'] for d in json.loads(run['prompt']['user'])['context']}
+                for table in ('billing_items', 'credits', 'services', 'teams'):
+                    self.assertIn('CREATE TABLE ' + table + '(', docs['table:' + table])
+                self.assertIn('rule:net-billed-spend', docs)
+                self.assertIn('rule:zero-activity', docs)
+                self.assertIn('rules:joins', docs)
+
     def test_validation(self):
         valid = dict(action='query', sql='SELECT 1', explanation='example', source_ids=['table:teams'])
         self.assertEqual(validate(valid, ['table:teams']), valid)

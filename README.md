@@ -4,7 +4,7 @@ A text-to-SQL assistant for synthetic AI spending analytics that retrieves datab
 schemas and business rules to propose grounded SQL. It supports BM25 retrieval
 and optional hybrid RAG. The internal Python package remains `opsquery`.
 
-**Status: Day 2 context retrieval and SQL proposal layers complete. Offline prompts and development retrieval metrics verified; live API and embedding inference unverified. No SQL execution or model accuracy claim.**
+**Status: Day 2 context retrieval and SQL proposal layers complete. Offline prompts and development retrieval metrics verified; actual local MiniLM hybrid retrieval verified; live API unverified. No SQL execution or model accuracy claim.**
 
 Planned question: "Which teams increased AI spending the most last month, excluding credits?" The eventual assistant will resolve business meaning, retrieve relevant schema and definitions, generate validated SQL, and show query results with its grounding.
 
@@ -50,9 +50,21 @@ Prompts and run metadata are saved under ignored `reports/runs/`. API calls requ
 the `embeddings` extra and downloads MiniLM weights on first use. See
 [Day 2 walkthrough](docs/day2_walkthrough.md) for exact setup, live commands,
 context IDs, table completion, validation boundaries and verification limits.
-BM25 top-k 5 achieved 93.06% mean required-table recall over 12 development query
-cases, selecting 3.92 tables on average; Q07 and Q12 missed tables. These are
-retrieval metrics, not SQL accuracy. Hybrid has not been measured.
+Measured on the same 12 development query cases at top-k 5:
+
+| Retrieval | Mean required-table recall | Mean selected tables | Missed tables |
+| --- | ---: | ---: | --- |
+| BM25 | 93.06% | 3.92 | Q07: services; Q12: requests |
+| Hybrid (actual local MiniLM + BM25/RRF) | 87.50% | 3.42 | Q07: services; Q11: daily_usage |
+
+Hybrid selected fewer tables but had lower recall. These are retrieval metrics,
+not SQL accuracy; held-out cases were not evaluated. Reports are in
+[BM25 results](reports/day2_retrieval.json), [hybrid results](reports/day2_hybrid.json),
+and [prompt/failure inspection](reports/day2_verification.json). Both retrieved
+net-spend prompts contain billing, credits, services and teams, but table coverage
+does not guarantee complete business-rule coverage or correct SQL. Live API
+verification remains pending: both required environment variables were absent.
+See the walkthrough for secure local setup and an explicit `--live` command.
 
 ## Files
 - src/opsquery/schema.sql: eight-table schema with keys and constraints.

@@ -99,6 +99,10 @@ implicit model default. The API key is never included in the persisted request
 payload or run JSON. No dotenv files are loaded automatically.
 
 ```bash
+# zsh: enter the key without echoing it or putting it in shell history.
+read -s 'OPENAI_API_KEY?OpenAI API key: '
+printf '\n'
+export OPENAI_API_KEY
 export OPENAI_MODEL='YOUR_SUPPORTED_MODEL_ID'
 .venv/bin/python -m opsquery.proposal 'What was gross billed spend in September 2026?' --mode full --live
 .venv/bin/python -m opsquery.proposal 'What was gross billed spend in September 2026?' --mode retrieval --live
@@ -133,24 +137,99 @@ passed to retrieval. Held-out cases are not evaluated. Required-table recall is
 count includes dependencies and bridges. These labels specify one reference
 formulation; an alternative valid formulation might use different tables.
 
-Actual offline run in `reports/day2_retrieval.json` (12 development query cases):
+Actual runs on 2026-10-30 in `reports/day2_retrieval.json` and
+`reports/day2_hybrid.json` (the identical 12 development query cases, Q01–Q12).
+The embeddings extra was installed with the documented uv command; MiniLM weights
+were downloaded and actual local inference completed. Installed versions included
+sentence-transformers 5.7.0, transformers 5.22.1, torch 2.15.0 and numpy 2.5.4.
+Package versions and inspected rankings are in `reports/day2_verification.json`.
+No evaluation cases, reference SQL or reference answers were edited or indexed.
 
 | Configuration | Mean required-table recall | Mean selected tables | Cases missing tables |
 | --- | ---: | ---: | --- |
 | BM25, top-k 5 | 0.93056 | 3.91667 | Q07: services; Q12: requests |
 | Full context (all 8 schemas, by construction) | 1.0 | 8 | None |
-| Hybrid | Not run | Not run | Unknown |
+| Hybrid (actual MiniLM + BM25/RRF), top-k 5 | 0.87500 | 3.41667 | Q07: services; Q11: daily_usage |
 
-Do not interpret recall as SQL accuracy. No LLM proposals were evaluated, no
-held-out performance was measured, and hybrid is not assumed to improve BM25.
-The recorded failures remain to make the baseline limitations explicit.
+Hybrid reduced mean table count by 0.50 but reduced macro recall by 5.56 percentage
+points. It fixed Q12, retained the Q07 miss and introduced the Q11 miss. Do not
+interpret recall as SQL accuracy. No LLM proposals were evaluated and no held-out
+performance was measured. The baseline was not retuned after observing these results.
+
+Failure inspection (actual retrieved IDs and rankings are saved in the verification
+report):
+
+- Q07 asks for the three services with most successful requests. Both modes miss
+  `services`. Top-k is consumed by definitions, join guidance and `daily_usage`;
+  the successful-request dependency adds `requests`, but the explicit grouping
+  heuristic only handles team mentions, not service mentions. FK completion
+  connects tables already selected and cannot infer an absent grouping dimension.
+  Its shortest path through `models` also illustrates that connectivity is not
+  the same as a useful join plan.
+- Q12 asks for teams with no requests. BM25 retrieves team/zero-activity material
+  but no document that adds `requests`; the team heuristic supplies only `services`
+  and `teams`. Hybrid selects enough request context to recover that table and
+  achieves full required-table recall for this case.
+- Q11 explicitly asks for daily usage. BM25 ranks `table:daily_usage` first.
+  Semantic ranking favors short business definitions, so fused top-k drops that
+  schema in favor of join guidance and token/success/failure/spend definitions.
+  Their dependencies add `requests` and `billing_items`, not `daily_usage`.
+  This is an observed failure of the present fusion/document design, not evidence
+  that an alternative SQL formulation using raw requests would satisfy the
+  explicitly requested source.
+
+## Net-spend prompt inspection
+
+Inspected both the example question above and exact development Q05 (which also
+says “Include teams with no spend”). Full, BM25 and actual hybrid prompts share
+identical system instructions. All include full DDL and column metadata for
+`billing_items`, `credits`, `services` and `teams`, the net-spend definition,
+UTC/half-open date conventions and fact/credit fanout safeguards. Full mode has
+all eight tables. Both retrieval modes select five tables: the four required
+ones plus `budgets`. The retrieved metric rules supply billing/credit dependencies;
+the team mention adds services/teams. For the shorter example no schema document
+was an initial top-k hit; all five tables came from dependencies, with no bridge
+additions. Thus checking only raw top-k table hits would understate actual context.
+
+Prompts were saved in ignored `reports/runs/net_spend_{full,bm25,hybrid}.json` and
+`reports/runs/net_spend_Q05_{full,bm25,hybrid}.json`; context IDs, table expansion and
+Q05 rankings are retained in `reports/day2_verification.json`.
+
+Schema availability is not business-definition completeness. Inspecting the
+shorter example, BM25 omits the standalone posted-credit rule (hybrid includes it).
+Both retrieval modes omit some full-context conventions. For the exact Q05
+inactive-team requirement, both do include `rule:zero-activity`, while both omit
+the standalone posted-credit rule. This confirms that a small wording change
+changes definition selection even when the final table set stays the same.
+Full context remains the only mode guaranteed to include every definition.
 
 ## Verification limits
 
-Both offline CLI modes and BM25 evaluation were run. Unit tests mock Responses
-API output, malformed envelopes, incomplete responses and refusals; hybrid fusion
-uses a mocked semantic ranking. A real API call and real embedding inference were
-not run: no API credentials/model were provisioned for this task and the optional
-embedding package/weights were not installed. The base installation remains usable
-without them. Optional model availability, network downloads, hardware performance
-and real provider integration remain unverified.
+Full/BM25/hybrid offline prompts, actual MiniLM inference and both development
+retrieval evaluations were run. Unit tests still use mocked provider responses
+and semantic rankings so the default suite requires no network/model download.
+The existing Day 1 data was preserved. Evaluation files were not modified;
+held-out cases were excluded from both retrieval evaluations. The existing reference regression test still runs the
+repository-authored reference SQL as before; only development cases contributed
+retrieval metrics.
+
+Only presence of `OPENAI_API_KEY` and `OPENAI_MODEL` was checked; both were absent.
+No credential values were printed and no real API request was made. To verify
+locally, use the secure zsh key-entry commands in “Explicit live API calls”,
+replace `YOUR_SUPPORTED_MODEL_ID` with an available model supporting structured
+outputs, and run either explicit `--live` command there. A saved run must have
+`status: completed`, a returned model identity, usage and a validated proposal
+before calling live integration verified. This remains pending. Do not execute
+the proposed SQL.
+
+Remaining limitations include this small development-only synthetic benchmark,
+heuristic metric/group dependencies, overselected tables, missing definitions,
+non-semantic FK path choice, embedding input truncation, an unpinned model revision
+and repeated per-question model loading/encoding. Package versions are recorded
+but transitive dependencies are not locked. The actual download initially failed
+inside the network sandbox and succeeded after network access was granted.
+This verifies the current environment, not every platform or offline fresh-cache
+installation. The base BM25 path remains usable without embeddings installed.
+
+Final verification: `.venv/bin/python -m unittest discover -s tests -v` passed
+all 15 tests, including the net-spend prompt schema/zero-activity regression.
