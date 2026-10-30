@@ -1,6 +1,6 @@
 """Allowlisted context corpus, BM25, optional local embeddings, and FK completion."""
 from collections import Counter, deque
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from itertools import combinations
 import json
 import math

@@ -9,6 +9,9 @@ description = "An evaluated text-to-SQL assistant for synthetic AI operations sp
 requires-python = ">=3.11"
 dependencies = ["duckdb==1.4.3"]
 
+[project.optional-dependencies]
+embeddings = ["sentence-transformers>=3,<6"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

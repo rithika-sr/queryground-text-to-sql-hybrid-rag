@@ -1,14 +1,23 @@
-"""Independent Python checks of key reference answers on the packaged seed-42 DB."""
+"""Independent Python checks on a temporary seed-42 DB, including fresh clones."""
 from collections import defaultdict
 from datetime import date, datetime
 import json
 import unittest
+import tempfile
+from pathlib import Path
 import duckdb
-from opsquery.warehouse import ROOT, DEFAULT_DB
+from opsquery.warehouse import ROOT, build
 
 class ReferenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.tmp.cleanup)
+        cls.db = Path(cls.tmp.name) / 'reference.duckdb'
+        build(cls.db, seed=42)
+
     def test_reference_cases_and_independent_totals(self):
-        c=duckdb.connect(str(DEFAULT_DB),read_only=True)
+        c=duckdb.connect(str(self.db),read_only=True)
         try:
             cases=json.loads((ROOT/'eval/cases.json').read_text())
             answers={q['id']: c.execute(q['reference_sql']).fetchall() for q in cases if q['expected_action']=='query'}

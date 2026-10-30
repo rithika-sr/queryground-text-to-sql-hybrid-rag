@@ -1,0 +1,319 @@
+{
+  "metric": "development required-table retrieval; NOT SQL accuracy",
+  "method": "bm25",
+  "top_k": 5,
+  "case_count": 12,
+  "mean_required_table_recall": 0.9305555555555555,
+  "mean_selected_table_count": 3.9166666666666665,
+  "failures": [
+    "Q07",
+    "Q12"
+  ],
+  "cases": [
+    {
+      "id": "Q01",
+      "required_tables": [
+        "requests"
+      ],
+      "selected_tables": [
+        "daily_usage",
+        "models",
+        "requests"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 3,
+      "initial_tables": [
+        "daily_usage"
+      ],
+      "dependency_added_tables": [
+        "requests"
+      ],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q02",
+      "required_tables": [
+        "requests"
+      ],
+      "selected_tables": [
+        "requests"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 1,
+      "initial_tables": [],
+      "dependency_added_tables": [
+        "requests"
+      ],
+      "bridge_tables": []
+    },
+    {
+      "id": "Q03",
+      "required_tables": [
+        "billing_items"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "budgets",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 5,
+      "initial_tables": [
+        "billing_items"
+      ],
+      "dependency_added_tables": [
+        "budgets",
+        "credits"
+      ],
+      "bridge_tables": [
+        "services",
+        "teams"
+      ]
+    },
+    {
+      "id": "Q04",
+      "required_tables": [
+        "credits"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "budgets",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 5,
+      "initial_tables": [
+        "credits"
+      ],
+      "dependency_added_tables": [
+        "billing_items",
+        "budgets"
+      ],
+      "bridge_tables": [
+        "services",
+        "teams"
+      ]
+    },
+    {
+      "id": "Q05",
+      "required_tables": [
+        "billing_items",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "budgets",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 5,
+      "initial_tables": [],
+      "dependency_added_tables": [
+        "billing_items",
+        "budgets",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "bridge_tables": []
+    },
+    {
+      "id": "Q06",
+      "required_tables": [
+        "requests",
+        "services",
+        "teams"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "models",
+        "requests",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 5,
+      "initial_tables": [
+        "teams"
+      ],
+      "dependency_added_tables": [
+        "billing_items",
+        "requests",
+        "services"
+      ],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q07",
+      "required_tables": [
+        "requests",
+        "services"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "credits",
+        "daily_usage",
+        "models",
+        "requests"
+      ],
+      "missing_tables": [
+        "services"
+      ],
+      "required_table_recall": 0.5,
+      "selected_table_count": 5,
+      "initial_tables": [
+        "daily_usage"
+      ],
+      "dependency_added_tables": [
+        "billing_items",
+        "credits",
+        "requests"
+      ],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q08",
+      "required_tables": [
+        "models",
+        "requests"
+      ],
+      "selected_tables": [
+        "daily_usage",
+        "models",
+        "requests"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 3,
+      "initial_tables": [
+        "daily_usage",
+        "requests"
+      ],
+      "dependency_added_tables": [],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q09",
+      "required_tables": [
+        "requests"
+      ],
+      "selected_tables": [
+        "daily_usage",
+        "models",
+        "requests"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 3,
+      "initial_tables": [
+        "daily_usage"
+      ],
+      "dependency_added_tables": [
+        "requests"
+      ],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q10",
+      "required_tables": [
+        "billing_items"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "budgets",
+        "credits",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 5,
+      "initial_tables": [
+        "billing_items"
+      ],
+      "dependency_added_tables": [
+        "budgets",
+        "credits"
+      ],
+      "bridge_tables": [
+        "services",
+        "teams"
+      ]
+    },
+    {
+      "id": "Q11",
+      "required_tables": [
+        "daily_usage"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "daily_usage",
+        "models",
+        "requests"
+      ],
+      "missing_tables": [],
+      "required_table_recall": 1.0,
+      "selected_table_count": 4,
+      "initial_tables": [
+        "daily_usage"
+      ],
+      "dependency_added_tables": [
+        "billing_items",
+        "requests"
+      ],
+      "bridge_tables": [
+        "models"
+      ]
+    },
+    {
+      "id": "Q12",
+      "required_tables": [
+        "requests",
+        "services",
+        "teams"
+      ],
+      "selected_tables": [
+        "billing_items",
+        "services",
+        "teams"
+      ],
+      "missing_tables": [
+        "requests"
+      ],
+      "required_table_recall": 0.6666666666666666,
+      "selected_table_count": 3,
+      "initial_tables": [
+        "teams"
+      ],
+      "dependency_added_tables": [
+        "billing_items",
+        "services"
+      ],
+      "bridge_tables": []
+    }
+  ]
+}

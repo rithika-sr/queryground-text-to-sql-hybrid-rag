@@ -1,8 +1,10 @@
 import io
 import json
 import unittest
+import tempfile
+from pathlib import Path
 from unittest.mock import patch
-from opsquery.proposal import preview, validate, openai_propose
+from opsquery.proposal import preview, validate, openai_propose, main
 
 
 class ProposalTests(unittest.TestCase):
@@ -50,3 +52,20 @@ class ProposalTests(unittest.TestCase):
         run = preview('x')
         self.assertEqual(run['status'], 'preview')
         with self.assertRaises(ValueError): openai_propose(run)
+
+    def test_offline_cli_never_calls_provider(self):
+        with tempfile.TemporaryDirectory() as tmp, patch('opsquery.proposal.openai_propose') as provider:
+            output = Path(tmp)/'preview.json'
+            main(['gross spend', '--output', str(output)])
+            provider.assert_not_called()
+            self.assertEqual(json.loads(output.read_text())['status'], 'preview')
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_live_failure_saved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)/'failure.json'
+            with self.assertRaises(SystemExit):
+                main(['gross spend', '--live', '--output', str(output)])
+            result = json.loads(output.read_text())
+            self.assertEqual(result['status'], 'failed')
+            self.assertIsNone(result['proposal'])
